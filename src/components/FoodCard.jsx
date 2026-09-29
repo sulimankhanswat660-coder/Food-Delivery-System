@@ -6,13 +6,28 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 const FoodCard = ({ food }) => {
   const { addToCart } = useCart();
+  const { currentUser, loading } = useAuth();
+  const navigate = useNavigate();
 
   const handleBuyNow = () => {
+    // Wait until Firebase authentication is checked
+    if (loading) {
+      return;
+    }
+
+    // User is not logged in
+    if (!currentUser) {
+      navigate("/sign-in");
+      return;
+    }
+
+    // User is logged in
     addToCart(food);
   };
 
@@ -91,10 +106,20 @@ const FoodCard = ({ food }) => {
             }}
           >
             <Button
-              component={Link}
-              to={`/foods/${food.id}`}
               fullWidth
               variant="outlined"
+              onClick={() => {
+                if (loading) {
+                  return;
+                }
+
+                if (!currentUser) {
+                  navigate("/sign-in");
+                  return;
+                }
+
+                navigate(`/foods/${food.id}`);
+              }}
               sx={{
                 height: 44,
                 borderRadius: 2.5,
@@ -116,6 +141,7 @@ const FoodCard = ({ food }) => {
               fullWidth
               variant="contained"
               onClick={handleBuyNow}
+              disabled={loading}
               sx={{
                 height: 44,
                 borderRadius: 2.5,
@@ -128,6 +154,10 @@ const FoodCard = ({ food }) => {
                 "&:hover": {
                   backgroundColor: "#e94d2c",
                   boxShadow: "none",
+                },
+                "&.Mui-disabled": {
+                  backgroundColor: "#ff5a36",
+                  color: "#ffffff",
                 },
               }}
             >
