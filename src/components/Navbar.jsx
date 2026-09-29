@@ -619,16 +619,6 @@ const handleProfile = () => {
                       {userData?.name || "User"}
                     </Typography>
 
-                    <Typography
-                      sx={{
-                        color: "#777",
-                        fontSize: "0.78rem",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {currentUser.email}
-                    </Typography>
                   </Box>
                 </Box>
 
