@@ -88,24 +88,6 @@ const RestaurantOrderDetails = () => {
           id: snapshot.id,
           ...snapshot.data(),
         };
-
-        /*
-          SINGLE RESTAURANT SYSTEM
-
-          There is NO restaurants collection.
-
-          Your foods use:
-          restaurantId: 1
-
-          Your orders use:
-          restaurant: {
-            id: 1,
-            name: "Foodie Restaurant"
-          }
-
-          Therefore the restaurant ID is checked directly.
-        */
-
         const orderRestaurantId = String(orderData.restaurant?.id ?? "");
 
         const currentRestaurantId = String(RESTAURANT_ID);
