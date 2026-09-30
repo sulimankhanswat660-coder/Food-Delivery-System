@@ -2,13 +2,15 @@ import { Box, Container, Typography, Button } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import FoodCard from "./FoodCard";
 import { Link } from "react-router-dom";
-import { useFood } from "../context/FoodContext";
-
+import { useFoods } from "../hooks/useFoods";
 const PopularFoods = () => {
-  const { foods, loading } = useFood();
+ const { data, isLoading } = useFoods("All");
 
-  // Show only the first 4 foods on Home page
-  const popularFoods = foods.slice(0, 4);
+// Get all loaded foods from React Query
+const foods = data?.pages.flatMap((page) => page.foods) || [];
+
+// Show only the first 4 foods on Home page
+const popularFoods = foods.slice(0, 4);
 
   return (
     <Box
@@ -106,7 +108,7 @@ const PopularFoods = () => {
             gap: 3,
           }}
         >
-          {loading ? (
+        {isLoading ? (
             <Typography sx={{ color: "#777777" }}>Loading foods...</Typography>
           ) : popularFoods.length > 0 ? (
             popularFoods.map((food) => <FoodCard key={food.id} food={food} />)

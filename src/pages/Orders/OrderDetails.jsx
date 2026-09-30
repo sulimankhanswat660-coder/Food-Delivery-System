@@ -63,9 +63,7 @@ const OrderDetails = () => {
         };
 
         if (orderData.userId !== currentUser.uid) {
-          setErrorMessage(
-            "You do not have permission to view this order."
-          );
+          setErrorMessage("You do not have permission to view this order.");
           setOrder(null);
           setLoading(false);
           return;
@@ -79,15 +77,37 @@ const OrderDetails = () => {
         console.error("Error listening to order:", error);
         setErrorMessage("Unable to load this order.");
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
   }, [id, currentUser, authLoading, navigate]);
+  const getStatusMessage = (status) => {
+    switch (status) {
+      case "Pending":
+        return "Your order has been received and is waiting for confirmation.";
 
-  const currentStatusIndex = orderStatuses.indexOf(
-    order?.status || "Pending"
-  );
+      case "Accepted":
+        return "Your order has been accepted by the restaurant.";
+
+      case "Preparing":
+        return "Your food is currently being prepared.";
+
+      case "Ready":
+        return "Your order is ready for delivery.";
+
+      case "Out for Delivery":
+        return "Your order is on the way to you.";
+
+      case "Delivered":
+        return "Your order has been delivered. Enjoy your meal!";
+
+      default:
+        return "Your order is being processed.";
+    }
+  };
+
+  const currentStatusIndex = orderStatuses.indexOf(order?.status || "Pending");
 
   if (authLoading || loading) {
     return (
@@ -204,7 +224,6 @@ const OrderDetails = () => {
           >
             Order Details
           </Typography>
-
           <Typography
             sx={{
               color: "#777",
@@ -212,6 +231,19 @@ const OrderDetails = () => {
             }}
           >
             Order ID: #{order.id}
+          </Typography>
+
+          <Typography
+            sx={{
+              color: "#999",
+              fontSize: "0.9rem",
+              mt: 0.5,
+            }}
+          >
+            Ordered:{" "}
+            {order.createdAt?.toDate
+              ? order.createdAt.toDate().toLocaleString()
+              : "Date unavailable"}
           </Typography>
         </Box>
 
@@ -284,9 +316,7 @@ const OrderDetails = () => {
                             xs: 28,
                             sm: 34,
                           },
-                          color: completed
-                            ? "#ff5a36"
-                            : "#d9d9d9",
+                          color: completed ? "#ff5a36" : "#d9d9d9",
                         }}
                       />
 
@@ -299,9 +329,7 @@ const OrderDetails = () => {
                             sm: "0.8rem",
                           },
                           fontWeight: isCurrent ? 800 : 600,
-                          color: completed
-                            ? "#ff5a36"
-                            : "#999",
+                          color: completed ? "#ff5a36" : "#999",
                           whiteSpace: "nowrap",
                         }}
                       >
@@ -323,9 +351,7 @@ const OrderDetails = () => {
                             sm: "17px",
                           },
                           backgroundColor:
-                            index < currentStatusIndex
-                              ? "#ff5a36"
-                              : "#e5e5e5",
+                            index < currentStatusIndex ? "#ff5a36" : "#e5e5e5",
                         }}
                       />
                     )}
@@ -333,12 +359,11 @@ const OrderDetails = () => {
                 );
               })}
             </Box>
-
             {/* Current Status */}
             <Box
               sx={{
                 mt: 4,
-                p: 2,
+                p: 2.5,
                 borderRadius: 3,
                 backgroundColor: "#fff0eb",
               }}
@@ -361,6 +386,16 @@ const OrderDetails = () => {
                 }}
               >
                 {order.status || "Pending"}
+              </Typography>
+
+              <Typography
+                sx={{
+                  color: "#666",
+                  fontSize: "0.9rem",
+                  mt: 0.8,
+                }}
+              >
+                {getStatusMessage(order.status || "Pending")}
               </Typography>
             </Box>
           </CardContent>
@@ -472,15 +507,12 @@ const OrderDetails = () => {
                   >
                     Rs.{" "}
                     {(
-                      Number(item.price || 0) *
-                      Number(item.quantity || 0)
+                      Number(item.price || 0) * Number(item.quantity || 0)
                     ).toLocaleString()}
                   </Typography>
                 </Box>
 
-                {index < order.items.length - 1 && (
-                  <Divider />
-                )}
+                {index < order.items.length - 1 && <Divider />}
               </Box>
             ))}
           </CardContent>
@@ -520,13 +552,10 @@ const OrderDetails = () => {
                 mb: 1.5,
               }}
             >
-              <Typography sx={{ color: "#777" }}>
-                Subtotal
-              </Typography>
+              <Typography sx={{ color: "#777" }}>Subtotal</Typography>
 
               <Typography sx={{ fontWeight: 600 }}>
-                Rs.{" "}
-                {Number(order.subtotal || 0).toLocaleString()}
+                Rs. {Number(order.subtotal || 0).toLocaleString()}
               </Typography>
             </Box>
 
@@ -537,15 +566,10 @@ const OrderDetails = () => {
                 mb: 2,
               }}
             >
-              <Typography sx={{ color: "#777" }}>
-                Delivery Fee
-              </Typography>
+              <Typography sx={{ color: "#777" }}>Delivery Fee</Typography>
 
               <Typography sx={{ fontWeight: 600 }}>
-                Rs.{" "}
-                {Number(
-                  order.deliveryFee || 0
-                ).toLocaleString()}
+                Rs. {Number(order.deliveryFee || 0).toLocaleString()}
               </Typography>
             </Box>
 
@@ -574,8 +598,7 @@ const OrderDetails = () => {
                   fontSize: "1.4rem",
                 }}
               >
-                Rs.{" "}
-                {Number(order.total || 0).toLocaleString()}
+                Rs. {Number(order.total || 0).toLocaleString()}
               </Typography>
             </Box>
 

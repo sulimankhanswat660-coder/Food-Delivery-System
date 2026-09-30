@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -9,8 +12,15 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Link } from "react-router-dom";
-import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 
 import { db } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
@@ -199,7 +209,7 @@ const Orders = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: 3,
+              gap: 2,
             }}
           >
             {orders.map((order) => {
@@ -208,24 +218,79 @@ const Orders = () => {
               );
 
               return (
-                <Card
+                <Accordion
                   key={order.id}
+                  disableGutters
                   elevation={0}
                   sx={{
-                    borderRadius: 4,
+                    borderRadius: "16px !important",
                     border: "1px solid #eeeeee",
                     backgroundColor: "#fff",
+                    overflow: "hidden",
+
+                    "&:before": {
+                      display: "none",
+                    },
                   }}
                 >
-                  <CardContent
+                  {/* ACCORDION HEADER */}
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
                     sx={{
-                      p: { xs: 2.5, sm: 3 },
-                      "&:last-child": {
-                        pb: { xs: 2.5, sm: 3 },
+                      px: { xs: 2.5, sm: 3 },
+                      py: 1,
+                      minHeight: 80,
+
+                      "& .MuiAccordionSummary-content": {
+                        margin: "12px 0",
+                      },
+
+                      "& .MuiAccordionSummary-content.Mui-expanded": {
+                        margin: "12px 0",
                       },
                     }}
                   >
-                    {/* Order Header */}
+                    <Box
+                      sx={{
+                        minWidth: 0,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: {
+                            xs: "1rem",
+                            sm: "1.05rem",
+                          },
+                          color: "#171717",
+                        }}
+                      >
+                        Order #{order.id.slice(0,8)}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          color: "#777",
+                          fontSize: "0.9rem",
+                          mt: 0.5,
+                        }}
+                      >
+                        {formatDate(order.createdAt)}
+                      </Typography>
+                    </Box>
+                  </AccordionSummary>
+
+                  {/* FULL ORDER CONTENT */}
+                  <AccordionDetails
+                    sx={{
+                      px: { xs: 2.5, sm: 3 },
+                      pb: { xs: 2.5, sm: 3 },
+                      pt: 0,
+                    }}
+                  >
+                    <Divider sx={{ mb: 2.5 }} />
+
+                    {/* Status */}
                     <Box
                       sx={{
                         display: "flex",
@@ -245,21 +310,20 @@ const Orders = () => {
                       <Box>
                         <Typography
                           sx={{
-                            fontWeight: 800,
-                            fontSize: "1.05rem",
+                            color: "#777",
+                            fontSize: "0.85rem",
                           }}
                         >
-                          Order #{order.id}
+                          Order Status
                         </Typography>
 
                         <Typography
                           sx={{
-                            color: "#777",
-                            fontSize: "0.9rem",
-                            mt: 0.5,
+                            fontWeight: 700,
+                            mt: 0.3,
                           }}
                         >
-                          {formatDate(order.createdAt)}
+                          {order.status || "Pending"}
                         </Typography>
                       </Box>
 
@@ -281,6 +345,15 @@ const Orders = () => {
 
                     {/* Order Items */}
                     <Box sx={{ mb: 2.5 }}>
+                      <Typography
+                        sx={{
+                          fontWeight: 800,
+                          mb: 2,
+                        }}
+                      >
+                        Ordered Food
+                      </Typography>
+
                       {order.items?.map((item, index) => (
                         <Box
                           key={`${item.foodId || item.id}-${index}`}
@@ -292,6 +365,7 @@ const Orders = () => {
                               index === order.items.length - 1
                                 ? 0
                                 : 2,
+                            minWidth: 0,
                           }}
                         >
                           <Box
@@ -299,8 +373,14 @@ const Orders = () => {
                             src={item.image}
                             alt={item.name}
                             sx={{
-                              width: 65,
-                              height: 65,
+                              width: {
+                                xs: 60,
+                                sm: 65,
+                              },
+                              height: {
+                                xs: 60,
+                                sm: 65,
+                              },
                               borderRadius: 2,
                               objectFit: "cover",
                               flexShrink: 0,
@@ -339,6 +419,10 @@ const Orders = () => {
                             sx={{
                               fontWeight: 700,
                               flexShrink: 0,
+                              fontSize: {
+                                xs: "0.9rem",
+                                sm: "1rem",
+                              },
                             }}
                           >
                             Rs.{" "}
@@ -414,7 +498,9 @@ const Orders = () => {
                           }}
                         >
                           Rs.{" "}
-                          {Number(order.total || 0).toLocaleString()}
+                          {Number(
+                            order.total || 0
+                          ).toLocaleString()}
                         </Typography>
                       </Box>
 
@@ -438,8 +524,8 @@ const Orders = () => {
                         View & Track
                       </Button>
                     </Box>
-                  </CardContent>
-                </Card>
+                  </AccordionDetails>
+                </Accordion>
               );
             })}
           </Box>
