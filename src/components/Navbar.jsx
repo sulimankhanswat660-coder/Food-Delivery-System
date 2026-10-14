@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import RestaurantMenuOutlinedIcon from "@mui/icons-material/RestaurantMenuOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
@@ -39,28 +39,28 @@ const Navbar = () => {
 
   const { currentUser, userData } = useAuth();
   const { totalItems } = useCart();
-const [unreadMessages, setUnreadMessages] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const isRestaurant = userData?.role === "restaurant";
-useEffect(() => {
-  if (userData?.role !== "restaurant") {
-    setUnreadMessages(0);
-    return;
-  }
+  useEffect(() => {
+    if (userData?.role !== "restaurant") {
+      setUnreadMessages(0);
+      return;
+    }
 
-  const messagesQuery = query(
-    collection(db, "contactMessages"),
-    where("read", "==", false)
-  );
+    const messagesQuery = query(
+      collection(db, "contactMessages"),
+      where("read", "==", false),
+    );
 
-  const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-    setUnreadMessages(snapshot.size);
-  });
+    const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+      setUnreadMessages(snapshot.size);
+    });
 
-  return () => unsubscribe();
-}, [userData]);
+    return () => unsubscribe();
+  }, [userData]);
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -78,15 +78,15 @@ useEffect(() => {
     setMobileOpen(false);
   };
 
-const handleProfile = () => {
-  setAnchorEl(null);
+  const handleProfile = () => {
+    setAnchorEl(null);
 
-  if (userData?.role === "restaurant") {
-    navigate("/restaurant-profile");
-  } else {
-    navigate("/profile");
-  }
-};
+    if (userData?.role === "restaurant") {
+      navigate("/restaurant-profile");
+    } else {
+      navigate("/profile");
+    }
+  };
 
   return (
     <>
@@ -101,9 +101,9 @@ const handleProfile = () => {
       >
         <Toolbar
           sx={{
-            maxWidth:1440,
-            mx:'auto',
-            width:'100%',
+            maxWidth: 1440,
+            mx: "auto",
+            width: "100%",
             minHeight: "72px !important",
             px: { xs: 2, md: 4 },
             position: "relative",
@@ -175,38 +175,37 @@ const handleProfile = () => {
                 >
                   Manage Foods
                 </Button>
-  <Button
-  component={Link}
-  to="/contact-messages"
-  sx={{
-    color: "#171717",
-    fontWeight: 600,
-    textTransform: "none",
-  }}
->
-  Messages
-
-  {unreadMessages > 0 && (
-    <Box
-      sx={{
-        ml: 0.8,
-        minWidth: 20,
-        height: 20,
-        px: 0.6,
-        borderRadius: "50%",
-        backgroundColor: "#ff5a36",
-        color: "#fff",
-        fontSize: "0.7rem",
-        fontWeight: 700,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {unreadMessages}
-    </Box>
-  )}
-</Button>
+                <Button
+                  component={Link}
+                  to="/contact-messages"
+                  sx={{
+                    color: "#171717",
+                    fontWeight: 600,
+                    textTransform: "none",
+                  }}
+                >
+                  Messages
+                  {unreadMessages > 0 && (
+                    <Box
+                      sx={{
+                        ml: 0.8,
+                        minWidth: 20,
+                        height: 20,
+                        px: 0.6,
+                        borderRadius: "50%",
+                        backgroundColor: "#ff5a36",
+                        color: "#fff",
+                        fontSize: "0.7rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {unreadMessages}
+                    </Box>
+                  )}
+                </Button>
               </>
             ) : (
               <>
@@ -342,9 +341,7 @@ const handleProfile = () => {
                   }}
                 >
                   <MenuItem onClick={handleProfile}>
-                    <PersonOutlinedIcon
-                      sx={{ mr: 1.5, fontSize: 20 }}
-                    />
+                    <PersonOutlinedIcon sx={{ mr: 1.5, fontSize: 20 }} />
                     Profile
                   </MenuItem>
 
@@ -355,9 +352,7 @@ const handleProfile = () => {
                         navigate("/restaurant-dashboard");
                       }}
                     >
-                      <DashboardOutlinedIcon
-                        sx={{ mr: 1.5, fontSize: 20 }}
-                      />
+                      <DashboardOutlinedIcon sx={{ mr: 1.5, fontSize: 20 }} />
                       Dashboard
                     </MenuItem>
                   )}
@@ -365,9 +360,7 @@ const handleProfile = () => {
                   <Divider />
 
                   <MenuItem onClick={handleLogout}>
-                    <LogoutOutlinedIcon
-                      sx={{ mr: 1.5, fontSize: 20 }}
-                    />
+                    <LogoutOutlinedIcon sx={{ mr: 1.5, fontSize: 20 }} />
                     Logout
                   </MenuItem>
                 </Menu>
@@ -407,26 +400,47 @@ const handleProfile = () => {
             )}
           </Box>
 
-          {/* Mobile Menu Button */}
-          <IconButton
-            onClick={() => setMobileOpen(true)}
+          {/* Mobile Cart and Menu Buttons */}
+          <Box
             sx={{
               display: { xs: "flex", md: "none" },
+              alignItems: "center",
+              gap: 0.5,
               marginLeft: "auto",
-              color: "#171717",
             }}
           >
-            <MenuIcon />
-          </IconButton>
+            {/* Cart Icon */}
+            {!isRestaurant && currentUser && (
+              <IconButton
+                component={Link}
+                to="/cart"
+                aria-label="Shopping cart"
+                sx={{ color: "#171717" }}
+              >
+                <Badge
+                  badgeContent={totalItems}
+                  color="error"
+                  invisible={totalItems === 0}
+                >
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
+              </IconButton>
+            )}
+
+            {/* Hamburger Menu */}
+            <IconButton
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation menu"
+              sx={{ color: "#171717" }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
 
       {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={closeMobile}
-      >
+      <Drawer anchor="right" open={mobileOpen} onClose={closeMobile}>
         <Box
           sx={{
             width: 280,
@@ -469,9 +483,7 @@ const handleProfile = () => {
                   onClick={closeMobile}
                   sx={{ borderRadius: 2 }}
                 >
-                  <DashboardOutlinedIcon
-                    sx={{ mr: 1.5 }}
-                  />
+                  <DashboardOutlinedIcon sx={{ mr: 1.5 }} />
                   <ListItemText primary="Dashboard" />
                 </ListItemButton>
 
@@ -481,9 +493,7 @@ const handleProfile = () => {
                   onClick={closeMobile}
                   sx={{ borderRadius: 2 }}
                 >
-                  <RestaurantMenuOutlinedIcon
-                    sx={{ mr: 1.5 }}
-                  />
+                  <RestaurantMenuOutlinedIcon sx={{ mr: 1.5 }} />
                   <ListItemText primary="Orders" />
                 </ListItemButton>
 
@@ -493,23 +503,19 @@ const handleProfile = () => {
                   onClick={closeMobile}
                   sx={{ borderRadius: 2 }}
                 >
-                  <RestaurantMenuOutlinedIcon
-                    sx={{ mr: 1.5 }}
-                  />
+                  <RestaurantMenuOutlinedIcon sx={{ mr: 1.5 }} />
                   <ListItemText primary="Manage Foods" />
                 </ListItemButton>
                 <ListItemButton
-  component={Link}
-  to="/contact-messages"
-  onClick={closeMobile}
-  sx={{ borderRadius: 2 }}
->
-  <ContactMailOutlinedIcon
-    sx={{ mr: 1.5 }}
-  />
+                  component={Link}
+                  to="/contact-messages"
+                  onClick={closeMobile}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <ContactMailOutlinedIcon sx={{ mr: 1.5 }} />
 
-  <ListItemText primary="Messages" />
-</ListItemButton>
+                  <ListItemText primary="Messages" />
+                </ListItemButton>
               </>
             ) : (
               <>
@@ -559,23 +565,6 @@ const handleProfile = () => {
                     <ListItemText primary="Orders" />
                   </ListItemButton>
                 )}
-
-                {currentUser && (
-                  <ListItemButton
-                    component={Link}
-                    to="/cart"
-                    onClick={closeMobile}
-                    sx={{ borderRadius: 2 }}
-                  >
-                    <ListItemText
-                      primary={`Cart${
-                        totalItems > 0
-                          ? ` (${totalItems})`
-                          : ""
-                      }`}
-                    />
-                  </ListItemButton>
-                )}
               </>
             )}
           </List>
@@ -602,9 +591,7 @@ const handleProfile = () => {
                       fontWeight: 700,
                     }}
                   >
-                    {userData?.name
-                      ?.charAt(0)
-                      ?.toUpperCase() || (
+                    {userData?.name?.charAt(0)?.toUpperCase() || (
                       <PersonOutlinedIcon />
                     )}
                   </Avatar>
@@ -618,7 +605,6 @@ const handleProfile = () => {
                     >
                       {userData?.name || "User"}
                     </Typography>
-
                   </Box>
                 </Box>
 
